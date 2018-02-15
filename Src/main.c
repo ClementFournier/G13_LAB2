@@ -66,11 +66,16 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_DAC_Init(void);
 
+
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 void FIR_C(int input, float *output);
 int buttonPressed();
-void displayNum();
+void displayNum (int num, int pos);
+void C_math (float * inputArray, float * outputArray, int length);
+void display (int mode, float num);
+
+
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
@@ -167,6 +172,9 @@ int main(void)
 						break;
 				}
 				
+				
+				//6969 TEST
+				/*
 				displayNum (6, 0);
 				HAL_Delay(3);
 				displayNum (9, 1);
@@ -175,6 +183,11 @@ int main(void)
 				HAL_Delay(3);
 				displayNum (9, 3);
 				HAL_Delay(3);
+				*/
+				
+				display (0, 0.28976);
+				
+				
 				
 			/* USER CODE END WHILE */
 
@@ -673,6 +686,34 @@ int buttonPressed(){
 		return 0;
 	}
 }
+
+void display (int mode, float num){
+	
+	
+	displayNum (mode, 0); //display mode at location 0 (first LED display)
+	HAL_Delay(3);
+	
+	float temp = num;
+	int digit = (int) num;
+	
+	
+	digit = digit % 10;
+	displayNum (digit, 1); //display unit at location 1
+	HAL_Delay(3);
+	
+	temp = num*10;
+	digit = (int) temp;
+	digit = digit % 10;
+	displayNum (digit, 2); //display digit at location 2
+	HAL_Delay(3);
+	
+	temp = num*100;
+	digit = (int) temp;
+	digit = digit % 10;
+	displayNum (digit, 3); //display digit at location 3
+	HAL_Delay(3);
+}
+
 
 /* USER CODE END 4 */
 
