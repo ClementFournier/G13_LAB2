@@ -84,10 +84,10 @@
 #define CLK_IN_GPIO_Port GPIOB
 #define Seg_DP_Pin GPIO_PIN_12
 #define Seg_DP_GPIO_Port GPIOB
-#define Seg_F_Pin GPIO_PIN_13
+#define Seg_G_Pin GPIO_PIN_13
+#define Seg_G_GPIO_Port GPIOB
+#define Seg_F_Pin GPIO_PIN_14
 #define Seg_F_GPIO_Port GPIOB
-#define Seg_FB14_Pin GPIO_PIN_14
-#define Seg_FB14_GPIO_Port GPIOB
 #define Seg_E_Pin GPIO_PIN_15
 #define Seg_E_GPIO_Port GPIOB
 #define Seg_D_Pin GPIO_PIN_8

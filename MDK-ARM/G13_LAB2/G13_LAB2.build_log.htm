@@ -28,16 +28,20 @@ Project File Date:  02/14/2018
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'G13_LAB2'
 compiling main.c...
-../Src/main.c(72): warning:  #1295-D: Deprecated declaration buttonPressed - give arg types
+../Src/main.c(73): warning:  #1295-D: Deprecated declaration buttonPressed - give arg types
   int buttonPressed();
-../Src/main.c(144): warning:  #111-D: statement is unreachable
+../Src/main.c(74): warning:  #1295-D: Deprecated declaration displayNum - give arg types
+  void displayNum();
+../Src/main.c(147): warning:  #111-D: statement is unreachable
   	HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET); // reset LED4
-../Src/main.c(81): warning:  #177-D: variable "temp"  was declared but never referenced
+../Src/main.c(83): warning:  #177-D: variable "temp"  was declared but never referenced
   	int temp = 0;
-../Src/main.c: 3 warnings, 0 errors
+../Src/main.c(255): warning:  #111-D: statement is unreachable
+  		switch (pos){
+../Src/main.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=6412 RO-data=448 RW-data=20 ZI-data=1140  
-"G13_LAB2\G13_LAB2.axf" - 0 Error(s), 3 Warning(s).
+Program Size: Code=7412 RO-data=468 RW-data=24 ZI-data=1136  
+"G13_LAB2\G13_LAB2.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 
