@@ -307,6 +307,15 @@ void FIR_C(int Input, float *Output) {
 }
 
 
+int buttonPressed(){
+	if ( HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0 ) == SET) {
+		return 1;
+	}
+	else 
+	{
+		return 0;
+	}
+}
 
 
 
