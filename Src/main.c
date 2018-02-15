@@ -40,6 +40,7 @@
 #include "stm32f4xx_hal.h"
 
 /* USER CODE BEGIN Includes */
+#include <math.h>
 
 /* USER CODE END Includes */
 
@@ -93,11 +94,7 @@ int main(void)
   MX_ADC1_Init();
   MX_DAC_Init();
 	
-	HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
 	
-	int dac_val = 0x30;
-	HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
-	HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dac_val);
   /* USER CODE END 1 */
 
   /* MCU Configuration----------------------------------------------------------*/
@@ -136,6 +133,10 @@ int main(void)
 			}
 			temp = 0;
 			*/
+				
+			int dac_val = 0x30;
+			HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
+			HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_8B_R, adc_val);
 		
 				HAL_ADC_Start_IT(&hadc1);
 		
@@ -166,7 +167,14 @@ int main(void)
 						break;
 				}
 				
-				displayNum (4, 3);
+				displayNum (6, 0);
+				HAL_Delay(3);
+				displayNum (9, 1);
+				HAL_Delay(3);
+				displayNum (6, 2);
+				HAL_Delay(3);
+				displayNum (9, 3);
+				HAL_Delay(3);
 				
 			/* USER CODE END WHILE */
 
@@ -572,6 +580,7 @@ void displayNum (int num, int pos) {
 				HAL_GPIO_WritePin(GPIOE, Dig_L_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(GPIOE, Dig_3_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(GPIOE, Dig_4_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOB, Seg_DP_Pin, GPIO_PIN_RESET);
 			break;
 			case 1:
 				HAL_GPIO_WritePin(GPIOE, Dig_1_Pin, GPIO_PIN_RESET);
@@ -579,7 +588,7 @@ void displayNum (int num, int pos) {
 				HAL_GPIO_WritePin(GPIOE, Dig_L_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(GPIOE, Dig_3_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(GPIOE, Dig_4_Pin, GPIO_PIN_RESET);
-				HAL_GPIO_WritePin(GPIOE, Seg_DP_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(GPIOB, Seg_DP_Pin, GPIO_PIN_SET);
 			break;
 			case 2:
 				HAL_GPIO_WritePin(GPIOE, Dig_1_Pin, GPIO_PIN_RESET);
@@ -587,6 +596,7 @@ void displayNum (int num, int pos) {
 				HAL_GPIO_WritePin(GPIOE, Dig_L_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(GPIOE, Dig_3_Pin, GPIO_PIN_SET);
 				HAL_GPIO_WritePin(GPIOE, Dig_4_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOB, Seg_DP_Pin, GPIO_PIN_RESET);
 			break;
 			case 3 :
 				HAL_GPIO_WritePin(GPIOE, Dig_1_Pin, GPIO_PIN_RESET);
@@ -594,6 +604,7 @@ void displayNum (int num, int pos) {
 				HAL_GPIO_WritePin(GPIOE, Dig_L_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(GPIOE, Dig_3_Pin, GPIO_PIN_RESET);
 				HAL_GPIO_WritePin(GPIOE, Dig_4_Pin, GPIO_PIN_SET);
+				HAL_GPIO_WritePin(GPIOB, Seg_DP_Pin, GPIO_PIN_RESET);
 			break;
 			default :
 				break;
@@ -617,6 +628,41 @@ void FIR_C(int Input, float *Output) {
 	*Output = out;
 }
 
+void C_math (float * inputArray, float * outputArray, int length){
+
+	float RMS=0;
+	float maxVal = inputArray[0];
+	float minVal = inputArray[0];
+	int maxInd = 0;
+	int minInd = 0;
+	
+	
+	for (int i = 0; i< (length); i++){
+		
+		RMS += (inputArray[i])*(inputArray[i]);
+		
+		if ((inputArray[i]) > maxVal){
+			maxVal = inputArray[i];
+			maxInd = i;
+		}
+		if ((inputArray[i]) < minVal){
+			minVal = (inputArray[i]);
+			minInd = i;
+		}
+	}
+	
+	RMS = RMS/length;
+	RMS = sqrt(RMS);
+	
+	outputArray [0]=RMS;
+	outputArray [1]= maxVal;
+	outputArray [2]= minVal;
+	outputArray [3]= maxInd;
+	outputArray [4]= minInd;
+	
+}
+
+
 
 int buttonPressed(){
 	if ( HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0 ) == SET) {
@@ -629,6 +675,7 @@ int buttonPressed(){
 }
 
 /* USER CODE END 4 */
+
 
 /**
   * @brief  This function is executed in case of error occurrence.
