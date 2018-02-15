@@ -27,7 +27,19 @@ Project File Date:  02/14/2018
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'G13_LAB2'
-"G13_LAB2\G13_LAB2.axf" - 0 Error(s), 0 Warning(s).
+compiling main.c...
+../Src/main.c(71): warning:  #1295-D: Deprecated declaration buttonPressed - give arg types
+  int buttonPressed();
+../Src/main.c(72): warning:  #1295-D: Deprecated declaration displayNum - give arg types
+  void displayNum();
+../Src/main.c(177): warning:  #111-D: statement is unreachable
+  			HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET); // reset LED4
+../Src/main.c(86): warning:  #177-D: variable "temp"  was declared but never referenced
+  	int temp = 0;
+../Src/main.c: 4 warnings, 0 errors
+linking...
+Program Size: Code=7724 RO-data=468 RW-data=24 ZI-data=1136  
+"G13_LAB2\G13_LAB2.axf" - 0 Error(s), 4 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -50,7 +62,7 @@ Package Vendor: Keil
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.0.1
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>
