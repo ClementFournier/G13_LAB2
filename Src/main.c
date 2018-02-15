@@ -55,9 +55,10 @@ DAC_HandleTypeDef hdac;
 int displayMode = 0;
 int sample = 0;
 int filterMemory [] = {0, 0, 0, 0, 0};
-
 int adc_val;
 float filtered_adc;
+float mathResults [5];
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -173,19 +174,7 @@ int main(void)
 				}
 				
 				
-				//6969 TEST
-				/*
-				displayNum (6, 0);
-				HAL_Delay(3);
-				displayNum (9, 1);
-				HAL_Delay(3);
-				displayNum (6, 2);
-				HAL_Delay(3);
-				displayNum (9, 3);
-				HAL_Delay(3);
-				*/
-				
-				display (0, 0.28976);
+				display (displayMode, adc_val);
 				
 				
 				
