@@ -146,20 +146,20 @@ int main(void)
 				
 			int dac_val = 0x30;
 			HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
-			HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_8B_R, 127);
+			HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_8B_R, 127);    //DAC is 8 bits resolution
 		
 			HAL_ADC_Start_IT(&hadc1);
 		
 			adc_val = HAL_ADC_GetValue(&hadc1);
 			//FIR_C(adc_val, &filtered_adc);
 			float test = (float)adc_val*3.0/1023.0;
-			FIR_C(test, &filtered_adc);
-			data [sample] = filtered_adc;
+			FIR_C(test, &filtered_adc);             //filter ADC value
+			data [sample] = filtered_adc;           //store filtered data in array
 		
 			sample ++;
 	}
 	
-	C_math (&data[0], &mathResults [0], sampleNB);
+	C_math (&data[0], &mathResults [0], sampleNB);                //perform math operation on data to get RMS, min and max values
 	
 	
 	while (1){
@@ -485,7 +485,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void displayNum (int num, int pos) {
+void displayNum (int num, int pos) {       //function used to diplay a single digit on LED segments
 	switch (num){
 		case 0:
 			HAL_GPIO_WritePin(GPIOD, Seg_A_Pin, GPIO_PIN_SET);
@@ -628,7 +628,7 @@ void displayNum (int num, int pos) {
 
 void FIR_C(int Input, float *Output) {    //FIR function from LAB 1
 	
-	float coef [] = {0.2, 0.2, 0.2, 0.2, 0.2}; //coefficients
+	float coef [] = {0.2, 0.2, 0.2, 0.2, 0.2};          //coefficients -> SHOULD ADD UP TO 1 !
 	
 	float out = 0.0;
 	for (int i = 4; i>0; i--){
@@ -644,7 +644,7 @@ void FIR_C(int Input, float *Output) {    //FIR function from LAB 1
 	*Output = out;
 }
 
-void C_math (float * inputArray, float * outputArray, int length){
+void C_math (float * inputArray, float * outputArray, int length){      //C_math function from lab 1
 
 	float RMS=0;
 	float maxVal = inputArray[0];
@@ -680,7 +680,7 @@ void C_math (float * inputArray, float * outputArray, int length){
 
 
 
-int buttonPressed(){
+int buttonPressed(){    //detects a blue button press
 	if ( HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0 ) == SET) {
 		return 1;
 	}
@@ -690,7 +690,7 @@ int buttonPressed(){
 	}
 }
 
-void display (int mode, float num){
+void display (int mode, float num){     //function used to display a float value on the LED segments
 	
 	
 	displayNum (mode, 0); //display mode at location 0 (first LED display)
