@@ -166,7 +166,7 @@ int main(void)
 						break;
 				}
 				
-				displayNum (8, 1);
+				displayNum (4, 3);
 				
 			/* USER CODE END WHILE */
 
