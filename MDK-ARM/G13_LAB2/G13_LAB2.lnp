@@ -1,0 +1,28 @@
+--cpu=Cortex-M4.fp
+"g13_lab2\stm32f4xx_hal_msp.o"
+"g13_lab2\stm32f4xx_it.o"
+"g13_lab2\main.o"
+"g13_lab2\stm32f4xx_hal_adc_ex.o"
+"g13_lab2\stm32f4xx_hal_flash_ex.o"
+"g13_lab2\stm32f4xx_hal_dac_ex.o"
+"g13_lab2\stm32f4xx_hal_rcc.o"
+"g13_lab2\stm32f4xx_hal_pwr_ex.o"
+"g13_lab2\stm32f4xx_hal_rcc_ex.o"
+"g13_lab2\stm32f4xx_hal_dac.o"
+"g13_lab2\stm32f4xx_hal_dma_ex.o"
+"g13_lab2\stm32f4xx_hal_tim_ex.o"
+"g13_lab2\stm32f4xx_hal_cortex.o"
+"g13_lab2\stm32f4xx_hal_flash_ramfunc.o"
+"g13_lab2\stm32f4xx_hal_tim.o"
+"g13_lab2\stm32f4xx_hal.o"
+"g13_lab2\stm32f4xx_hal_adc.o"
+"g13_lab2\stm32f4xx_hal_pwr.o"
+"g13_lab2\stm32f4xx_hal_flash.o"
+"g13_lab2\stm32f4xx_hal_dma.o"
+"g13_lab2\stm32f4xx_hal_gpio.o"
+"g13_lab2\startup_stm32f407xx.o"
+"g13_lab2\system_stm32f4xx.o"
+--library_type=microlib --strict --scatter "G13_LAB2\G13_LAB2.sct"
+--diag_suppress=L6329 --summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "G13_LAB2.map" -o G13_LAB2\G13_LAB2.axf
