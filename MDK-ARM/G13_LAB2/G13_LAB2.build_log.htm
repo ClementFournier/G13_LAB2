@@ -28,18 +28,20 @@ Project File Date:  02/14/2018
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'G13_LAB2'
 compiling main.c...
-../Src/main.c(74): warning:  #1295-D: Deprecated declaration buttonPressed - give arg types
+../Src/main.c(78): warning:  #1295-D: Deprecated declaration buttonPressed - give arg types
   int buttonPressed();
-../Src/main.c(143): warning:  #177-D: variable "dac_val"  was declared but never referenced
+../Src/main.c(155): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+  			float test = (float)adc_val*3.0/1023.0;
+../Src/main.c(147): warning:  #177-D: variable "dac_val"  was declared but never referenced
   			int dac_val = 0x30;
-../Src/main.c(187): warning:  #111-D: statement is unreachable
+../Src/main.c(199): warning:  #111-D: statement is unreachable
   			HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET); // reset LED4
-../Src/main.c(93): warning:  #177-D: variable "temp"  was declared but never referenced
+../Src/main.c(97): warning:  #177-D: variable "temp"  was declared but never referenced
   	int temp = 0;
-../Src/main.c: 4 warnings, 0 errors
+../Src/main.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=7960 RO-data=468 RW-data=24 ZI-data=1160  
-"G13_LAB2\G13_LAB2.axf" - 0 Error(s), 4 Warning(s).
+Program Size: Code=9696 RO-data=468 RW-data=40 ZI-data=1672  
+"G13_LAB2\G13_LAB2.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 

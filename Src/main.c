@@ -52,12 +52,16 @@ DAC_HandleTypeDef hdac;
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
 
-int displayMode = 0;
+int sampleNB = 100; //CHANGE FOR SAMPLE NUMBER
 int sample = 0;
+
+
+int displayMode = 0;
 int filterMemory [] = {0, 0, 0, 0, 0};
 int adc_val;
 float filtered_adc;
 float mathResults [5];
+
 
 /* USER CODE END PV */
 
@@ -91,7 +95,7 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 	int temp = 0;
-	
+	float data [sampleNB];
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
   SystemClock_Config();
@@ -130,7 +134,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
+  while (sample < sampleNB)
   {
 			/*
 			//SLOW DOWN WHILE LOOP
@@ -142,19 +146,29 @@ int main(void)
 				
 			int dac_val = 0x30;
 			HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
-			HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_8B_R, adc_val);
+			HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_8B_R, 127);
 		
-				HAL_ADC_Start_IT(&hadc1);
+			HAL_ADC_Start_IT(&hadc1);
 		
-				adc_val = HAL_ADC_GetValue(&hadc1);
-				FIR_C(adc_val, &filtered_adc);
+			adc_val = HAL_ADC_GetValue(&hadc1);
+			//FIR_C(adc_val, &filtered_adc);
+			float test = (float)adc_val*3.0/1023.0;
+			FIR_C(test, &filtered_adc);
+			data [sample] = filtered_adc;
 		
-		
+			sample ++;
+	}
+	
+	C_math (&data[0], &mathResults [0], sampleNB);
+	
+	
+	while (1){
 				if ( buttonPressed() == 1){
 							displayMode = displayMode + 1;
 							displayMode = displayMode % 3;
 				}
 				
+				//HAL_Delay(10);
 				
 				switch(displayMode) {
 					case 0:
@@ -173,9 +187,7 @@ int main(void)
 						break;
 				}
 				
-				
-				display (displayMode, adc_val);
-				
+				display (displayMode, mathResults [displayMode]);
 				
 				
 			/* USER CODE END WHILE */
@@ -614,7 +626,7 @@ void displayNum (int num, int pos) {
 	
 }
 
-void FIR_C(int Input, float *Output) {
+void FIR_C(int Input, float *Output) {    //FIR function from LAB 1
 	
 	float coef [] = {0.2, 0.2, 0.2, 0.2, 0.2}; //coefficients
 	
@@ -622,6 +634,8 @@ void FIR_C(int Input, float *Output) {
 	for (int i = 4; i>0; i--){
 		filterMemory[i] = filterMemory[i-1];
 	}
+	
+	filterMemory [0] = Input;
 	
 	for (int i = 0; i<5; i++){
 		out += coef[i]*filterMemory[i];
