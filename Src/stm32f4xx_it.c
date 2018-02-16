@@ -36,7 +36,7 @@
 #include "stm32f4xx_it.h"
 
 /* USER CODE BEGIN 0 */
-
+uint8_t systickFlag;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -52,7 +52,7 @@ extern ADC_HandleTypeDef hadc1;
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-
+	
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();

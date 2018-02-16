@@ -61,6 +61,7 @@ float filterMemory [] = {0, 0, 0, 0, 0};
 int adc_val;
 float filtered_adc;
 float mathResults [5];
+extern uint8_t systickFlag;
 
 
 /* USER CODE END PV */
@@ -96,6 +97,7 @@ int main(void)
   /* USER CODE BEGIN 1 */
 	float temp = 0;
 	float data [sampleNB];
+	int time_to_sample = 0;
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
   SystemClock_Config();
@@ -138,15 +140,8 @@ int main(void)
 	
 	while (1){
 		while (sample < sampleNB)
-		{
-			/*
-			//SLOW DOWN WHILE LOOP
-			for (int i=0; i<1000; i++){
-				temp = temp +1; 
-			}
-			temp = 0;
-			*/
-				
+		{				
+
 			int dac_val = 0x30;
 			HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
 			HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_8B_R, 127);    //DAC is 8 bits resolution
@@ -487,6 +482,12 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+/**
+  * @brief  This function displays a integer on one of the digits of a 7 segiment, 4 digit led display
+	* @param  num: integer number to be displayed 
+						pos: the location in a 4 digit display,
+  * @retval none
+  */
 void displayNum (int num, int pos) {       //function used to diplay a single digit on LED segments
 	switch (num){
 		case 0:
@@ -627,8 +628,14 @@ void displayNum (int num, int pos) {       //function used to diplay a single di
 		}
 	
 }
-
-void FIR_C(float Input, float *Output) {    //FIR function from LAB 1
+/**
+  * @brief  This is the FIR function from LAB 1
+						Filters data using FIR to eliminate unwanted noise
+	* @param  Input: data to be filtered
+						Output: filtered data
+  * @retval none
+  */
+void FIR_C(float Input, float *Output) {   
 	
 	float coef [] = {0.2, 0.2, 0.2, 0.2, 0.2};          //coefficients -> SHOULD ADD UP TO 1 !
 	
@@ -645,7 +652,14 @@ void FIR_C(float Input, float *Output) {    //FIR function from LAB 1
 	
 	*Output = out;
 }
-
+/**
+  * @brief  This is the C?math function from lab1
+						calculates rms, max, min, min index, and max index from the given array
+	* @param  inputArray: contains the samples to be analyzed
+						outputArray: contains the array where the results are stored
+						length: length of the input array
+  * @retval none
+  */
 void C_math (float * inputArray, float * outputArray, int length){      //C_math function from lab 1
 
 	float RMS=0;
@@ -679,8 +693,13 @@ void C_math (float * inputArray, float * outputArray, int length){      //C_math
 	outputArray [4]= minInd;
 	
 }
-
-int buttonPressed(){    //detects a blue button press
+/**
+  * @brief  detects a blue button press
+  * @param  none
+  * @retval returns 1 when button is pressed
+						0 otherwise
+  */
+int buttonPressed(){    
 	if ( HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0 ) == SET) {
 		HAL_Delay(200);
 		return 1;
@@ -690,8 +709,13 @@ int buttonPressed(){    //detects a blue button press
 		return 0;
 	}
 }
-
-void display (int mode, float num){     //function used to display a float value on the LED segments
+/**
+  * @brief  function used to display a float value on the LED segments
+  * @param  num: the floating number to be displayed at digits 1, 2, and 3
+*         	mode: the int thats displayed at the firist digit to indicate rms/min/max mode 
+  * @retval None
+  */
+void display (int mode, float num){     //
 	
 	
 	displayNum (mode, 0); //display mode at location 0 (first LED display)
