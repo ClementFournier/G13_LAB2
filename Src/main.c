@@ -134,8 +134,11 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (sample < sampleNB)
-  {
+  
+	
+	while (1){
+		while (sample < sampleNB)
+		{
 			/*
 			//SLOW DOWN WHILE LOOP
 			for (int i=0; i<1000; i++){
@@ -157,50 +160,49 @@ int main(void)
 			data [sample] = filtered_adc;           //store filtered data in array
 		
 			sample ++;
+		}
+		sample = 0;
+	
+		C_math (&data[0], &mathResults [0], sampleNB);                //perform math operation on data to get RMS, min and max values
+	
+		if ( buttonPressed() == 1){
+					displayMode = displayMode + 1;
+					displayMode = displayMode % 3;
+		}
+		
+		//HAL_Delay(10);
+		
+		switch(displayMode) {
+			case 0:
+				HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_SET); // switch on LED6
+				HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET); // reset LED4
+				break;
+			case 1:
+				HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_SET); // switch on LED5
+				HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET); // reset LED6
+				break;
+			case 2:
+				HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_SET); // switch on LED4
+				HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET); // reset LED5
+				break;
+			default:
+				break;
+		}
+		
+		display (displayMode, mathResults [displayMode]);
+		
+		
+	/* USER CODE END WHILE */
+
+	/* USER CODE BEGIN 3 */
+
 	}
-	
-	C_math (&data[0], &mathResults [0], sampleNB);                //perform math operation on data to get RMS, min and max values
-	
-	
-	while (1){
-				if ( buttonPressed() == 1){
-							displayMode = displayMode + 1;
-							displayMode = displayMode % 3;
-				}
-				
-				//HAL_Delay(10);
-				
-				switch(displayMode) {
-					case 0:
-						HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_SET); // switch on LED6
-						HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET); // reset LED4
-						break;
-					case 1:
-						HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_SET); // switch on LED5
-						HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET); // reset LED6
-						break;
-					case 2:
-						HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_SET); // switch on LED4
-						HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET); // reset LED5
-						break;
-					default:
-						break;
-				}
-				
-				display (displayMode, mathResults [displayMode]);
-				
-				
-			/* USER CODE END WHILE */
 
-			/* USER CODE BEGIN 3 */
-
-			}
+	HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET); // reset LED4
+	HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET); // reset LED6
+	HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET); // reset LED5
 	
-			HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET); // reset LED4
-			HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET); // reset LED6
-			HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET); // reset LED5
-			
-			/* USER CODE END 3 */
+	/* USER CODE END 3 */
 
 }
 
@@ -249,7 +251,7 @@ void SystemClock_Config(void)
 
     /**Configure the Systick interrupt time 
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/50);
 
     /**Configure the Systick 
     */
@@ -396,7 +398,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
@@ -678,10 +680,9 @@ void C_math (float * inputArray, float * outputArray, int length){      //C_math
 	
 }
 
-
-
 int buttonPressed(){    //detects a blue button press
 	if ( HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0 ) == SET) {
+		HAL_Delay(200);
 		return 1;
 	}
 	else 

@@ -68,9 +68,11 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
 
+  /* USER CODE END EXTI0_IRQn 1 */
 /**
 * @brief This function handles ADC1, ADC2 and ADC3 global interrupts.
 */
+
 void ADC_IRQHandler(void)
 {
   /* USER CODE BEGIN ADC_IRQn 0 */
