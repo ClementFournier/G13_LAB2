@@ -57,7 +57,7 @@ int sample = 0;
 
 
 int displayMode = 0;
-int filterMemory [] = {0, 0, 0, 0, 0};
+float filterMemory [] = {0, 0, 0, 0, 0};
 int adc_val;
 float filtered_adc;
 float mathResults [5];
@@ -74,7 +74,7 @@ static void MX_DAC_Init(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
-void FIR_C(int input, float *output);
+void FIR_C(float input, float *output);
 int buttonPressed();
 void displayNum (int num, int pos);
 void C_math (float * inputArray, float * outputArray, int length);
@@ -94,7 +94,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	int temp = 0;
+	float temp = 0;
 	float data [sampleNB];
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -628,7 +628,7 @@ void displayNum (int num, int pos) {       //function used to diplay a single di
 	
 }
 
-void FIR_C(int Input, float *Output) {    //FIR function from LAB 1
+void FIR_C(float Input, float *Output) {    //FIR function from LAB 1
 	
 	float coef [] = {0.2, 0.2, 0.2, 0.2, 0.2};          //coefficients -> SHOULD ADD UP TO 1 !
 	
