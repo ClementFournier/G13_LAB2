@@ -37,6 +37,8 @@
 
 /* USER CODE BEGIN 0 */
 uint8_t systickFlag;
+uint8_t buttonFlag;
+int ms_counter = 0;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -52,7 +54,11 @@ extern ADC_HandleTypeDef hadc1;
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
-	
+	ms_counter = ms_counter + 1;
+	if ( ms_counter >= 20 ){
+		ms_counter = 0;
+		systickFlag = 1;
+	}
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
@@ -68,11 +74,26 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32f4xx.s).                    */
 /******************************************************************************/
 
+/**
+* @brief This function handles EXTI line0 interrupt.
+*/
+void EXTI0_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI0_IRQn 0 */
+	printf("button 1 !!  ");
+	buttonFlag = 1;
+		
+  /* USER CODE END EXTI0_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+  /* USER CODE BEGIN EXTI0_IRQn 1 */
+	
+
   /* USER CODE END EXTI0_IRQn 1 */
+}
+
 /**
 * @brief This function handles ADC1, ADC2 and ADC3 global interrupts.
 */
-
 void ADC_IRQHandler(void)
 {
   /* USER CODE BEGIN ADC_IRQn 0 */

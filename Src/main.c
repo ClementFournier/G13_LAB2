@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
-  * File Name          : main.c
-  * Description        : Main program body
+  * @file           : main.c
+  * @brief          : Main program body
   ******************************************************************************
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
@@ -55,13 +55,14 @@ DAC_HandleTypeDef hdac;
 int sampleNB = 100; //CHANGE FOR SAMPLE NUMBER
 int sample = 0;
 
-
+#define MATH_ARRAY_SIZE 5
 int displayMode = 0;
 float filterMemory [] = {0, 0, 0, 0, 0};
 int adc_val;
 float filtered_adc;
-float mathResults [5];
+float mathResults [MATH_ARRAY_SIZE];
 extern uint8_t systickFlag;
+extern uint8_t buttonFlag;
 
 
 /* USER CODE END PV */
@@ -72,11 +73,10 @@ static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_DAC_Init(void);
 
-
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
 void FIR_C(float input, float *output);
-int buttonPressed();
+//int buttonPressed();
 void displayNum (int num, int pos);
 void C_math (float * inputArray, float * outputArray, int length);
 void display (int mode, float num);
@@ -91,21 +91,18 @@ void display (int mode, float num);
 
 /* USER CODE END 0 */
 
+/**
+  * @brief  The application entry point.
+  *
+  * @retval None
+  */
 int main(void)
 {
-
   /* USER CODE BEGIN 1 */
-	float temp = 0;
-	float data [sampleNB];
-	int time_to_sample = 0;
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
-  SystemClock_Config();
 
-  MX_GPIO_Init();
-  MX_ADC1_Init();
-  MX_DAC_Init();
-	
+	float data [sampleNB];
+
+  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	
   /* USER CODE END 1 */
 
@@ -119,7 +116,7 @@ int main(void)
   /* USER CODE END Init */
 
   /* Configure the system clock */
-  //SystemClock_Config();
+  SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
 
@@ -127,10 +124,10 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-	MX_ADC1_Init();
+  MX_ADC1_Init();
   MX_DAC_Init();
-
   /* USER CODE BEGIN 2 */
+		printf("begin!");
 
   /* USER CODE END 2 */
 
@@ -139,12 +136,13 @@ int main(void)
   
 	
 	while (1){
-		while (sample < sampleNB)
-		{				
+		if(systickFlag == 1){			
+			
+			systickFlag = 0;
 
 			int dac_val = 0x30;
 			HAL_DAC_Start(&hdac, DAC_CHANNEL_1);
-			HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_8B_R, 127);    //DAC is 8 bits resolution
+			HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_8B_R, dac_val);    //DAC is 8 bits resolution
 		
 			HAL_ADC_Start_IT(&hadc1);
 		
@@ -155,30 +153,36 @@ int main(void)
 			data [sample] = filtered_adc;           //store filtered data in array
 		
 			sample ++;
+			sample = sample % sampleNB;
 		}
-		sample = 0;
+		if ( buttonFlag == 1){
+			buttonFlag = 0;
+			displayMode = displayMode + 1;
+			displayMode = displayMode % 3;
+			printf("displayMode = %d \n!", displayMode);
+		}
 	
 		C_math (&data[0], &mathResults [0], sampleNB);                //perform math operation on data to get RMS, min and max values
 	
-		if ( buttonPressed() == 1){
-					displayMode = displayMode + 1;
-					displayMode = displayMode % 3;
-		}
-		
-		//HAL_Delay(10);
 		
 		switch(displayMode) {
 			case 0:
-				HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_SET); // switch on LED6
+				HAL_GPIO_WritePin(GPIOD, LD3_Pin, GPIO_PIN_SET); // switch on LED6
 				HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET); // reset LED4
+				HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET);
 				break;
 			case 1:
-				HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_SET); // switch on LED5
-				HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET); // reset LED6
+				HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_SET); // switch on LED5
+				HAL_GPIO_WritePin(GPIOD, LD3_Pin, GPIO_PIN_RESET); // reset LED6
+				HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET);
 				break;
 			case 2:
-				HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_SET); // switch on LED4
-				HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET); // reset LED5
+				HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_SET); // switch on LED4
+				HAL_GPIO_WritePin(GPIOD, LD3_Pin, GPIO_PIN_RESET); // reset LED5
+				HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET);
 				break;
 			default:
 				break;
@@ -187,22 +191,20 @@ int main(void)
 		display (displayMode, mathResults [displayMode]);
 		
 		
-	/* USER CODE END WHILE */
+  /* USER CODE END WHILE */
 
-	/* USER CODE BEGIN 3 */
+  /* USER CODE BEGIN 3 */
 
 	}
-
-	HAL_GPIO_WritePin(GPIOD, LD4_Pin, GPIO_PIN_RESET); // reset LED4
-	HAL_GPIO_WritePin(GPIOD, LD6_Pin, GPIO_PIN_RESET); // reset LED6
-	HAL_GPIO_WritePin(GPIOD, LD5_Pin, GPIO_PIN_RESET); // reset LED5
 	
-	/* USER CODE END 3 */
+  /* USER CODE END 3 */
 
 }
 
-/** System Clock Configuration
-*/
+/**
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
 
@@ -246,7 +248,7 @@ void SystemClock_Config(void)
 
     /**Configure the Systick interrupt time 
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/50);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
     /**Configure the Systick 
     */
@@ -360,7 +362,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(OTG_FS_PowerSwitchOn_GPIO_Port, OTG_FS_PowerSwitchOn_Pin, GPIO_PIN_SET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Seg_DP_Pin|Seg_F_Pin|Seg_G_Pin|Seg_E_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Seg_DP_Pin|Seg_G_Pin|Seg_F_Pin|Seg_E_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOD, Seg_D_Pin|Seg_C_Pin|Seg_B_Pin|Seg_A_Pin 
@@ -419,8 +421,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF5_SPI2;
   HAL_GPIO_Init(CLK_IN_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : Seg_DP_Pin Seg_F_Pin Seg_FB14_Pin Seg_E_Pin */
-  GPIO_InitStruct.Pin = Seg_DP_Pin|Seg_F_Pin|Seg_G_Pin|Seg_E_Pin;
+  /*Configure GPIO pins : Seg_DP_Pin Seg_G_Pin Seg_F_Pin Seg_E_Pin */
+  GPIO_InitStruct.Pin = Seg_DP_Pin|Seg_G_Pin|Seg_F_Pin|Seg_E_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -478,6 +480,10 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_EVT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(MEMS_INT2_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 
@@ -636,22 +642,19 @@ void displayNum (int num, int pos) {       //function used to diplay a single di
   * @retval none
   */
 void FIR_C(float Input, float *Output) {   
-	
 	float coef [] = {0.2, 0.2, 0.2, 0.2, 0.2};          //coefficients -> SHOULD ADD UP TO 1 !
-	
 	float out = 0.0;
 	for (int i = 4; i>0; i--){
 		filterMemory[i] = filterMemory[i-1];
 	}
-	
 	filterMemory [0] = Input;
-	
 	for (int i = 0; i<5; i++){
 		out += coef[i]*filterMemory[i];
 	}
-	
 	*Output = out;
 }
+
+
 /**
   * @brief  This is the C?math function from lab1
 						calculates rms, max, min, min index, and max index from the given array
@@ -693,15 +696,18 @@ void C_math (float * inputArray, float * outputArray, int length){      //C_math
 	outputArray [4]= minInd;
 	
 }
+
 /**
   * @brief  detects a blue button press
   * @param  none
   * @retval returns 1 when button is pressed
 						0 otherwise
   */
+/*
 int buttonPressed(){    
 	if ( HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0 ) == SET) {
 		HAL_Delay(200);
+		printf("button (pulled)!");
 		return 1;
 	}
 	else 
@@ -709,6 +715,7 @@ int buttonPressed(){
 		return 0;
 	}
 }
+*/
 /**
   * @brief  function used to display a float value on the LED segments
   * @param  num: the floating number to be displayed at digits 1, 2, and 3
@@ -719,7 +726,7 @@ void display (int mode, float num){     //
 	
 	
 	displayNum (mode, 0); //display mode at location 0 (first LED display)
-	HAL_Delay(3);
+	HAL_Delay(1);
 	
 	float temp = num;
 	int digit = (int) num;
@@ -727,66 +734,63 @@ void display (int mode, float num){     //
 	
 	digit = digit % 10;
 	displayNum (digit, 1); //display unit at location 1
-	HAL_Delay(3);
+	HAL_Delay(1);
 	
 	temp = num*10;
 	digit = (int) temp;
 	digit = digit % 10;
 	displayNum (digit, 2); //display digit at location 2
-	HAL_Delay(3);
+	HAL_Delay(1);
 	
 	temp = num*100;
 	digit = (int) temp;
 	digit = digit % 10;
 	displayNum (digit, 3); //display digit at location 3
-	HAL_Delay(3);
+	HAL_Delay(1);
 }
 
 
 /* USER CODE END 4 */
 
-
 /**
   * @brief  This function is executed in case of error occurrence.
-  * @param  None
+  * @param  file: The file name as string.
+  * @param  line: The line in file as a number.
   * @retval None
   */
-void _Error_Handler(char * file, int line)
+void _Error_Handler(char *file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
   while(1) 
   {
   }
-  /* USER CODE END Error_Handler_Debug */ 
+  /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
-
+#ifdef  USE_FULL_ASSERT
 /**
-   * @brief Reports the name of the source file and the source line number
-   * where the assert_param error has occurred.
-   * @param file: pointer to the source file name
-   * @param line: assert_param error line source number
-   * @retval None
-   */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t* file, uint32_t line)
-{
+{ 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
   /* USER CODE END 6 */
-
 }
-
-#endif
-
-/**
-  * @}
-  */ 
+#endif /* USE_FULL_ASSERT */
 
 /**
   * @}
-*/ 
+  */
+
+/**
+  * @}
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -2,6 +2,7 @@
 "g13_lab2\stm32f4xx_hal_msp.o"
 "g13_lab2\stm32f4xx_it.o"
 "g13_lab2\main.o"
+"g13_lab2\fputc_debug.o"
 "g13_lab2\stm32f4xx_hal_adc_ex.o"
 "g13_lab2\stm32f4xx_hal_flash_ex.o"
 "g13_lab2\stm32f4xx_hal_dac_ex.o"

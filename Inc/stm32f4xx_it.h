@@ -40,12 +40,15 @@
 #endif 
 
 /* Includes ------------------------------------------------------------------*/
+#include "stm32f4xx_hal.h"
+#include "main.h"
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
 /* Exported macro ------------------------------------------------------------*/
 /* Exported functions ------------------------------------------------------- */
 
 void SysTick_Handler(void);
+void EXTI0_IRQHandler(void);
 void ADC_IRQHandler(void);
 
 #ifdef __cplusplus
